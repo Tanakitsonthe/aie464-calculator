@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>AIE464/CE335 — คำนวณ + ตัวอย่างโจทย์</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{background:#0f172a;color:#f1f5f9;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:14px;padding-bottom:60px}
+/* NAV */
+nav{background:#0a1120;border-bottom:1px solid #334155;display:flex;gap:3px;padding:8px 8px 0;overflow-x:auto;-webkit-overflow-scrolling:touch;position:sticky;top:0;z-index:99}
+.tab{flex-shrink:0;padding:9px 12px;border-radius:7px 7px 0 0;border:1px solid #334155;border-bottom:none;background:#1e293b;color:#64748b;cursor:pointer;font-size:11px;font-weight:700;text-align:center;line-height:1.4}
+.tab.on{background:#1d4ed8;color:#fff;border-color:#3b82f6}
+.pg{display:none;padding:12px 10px 80px;max-width:900px;margin:0 auto}
+.pg.on{display:block}
+/* EXAMPLE BUTTONS */
+.exrow{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
+.exbtn{padding:8px 14px;border-radius:7px;border:1px solid #334155;background:#1e293b;color:#64748b;cursor:pointer;font-size:12px;font-weight:700}
+.exbtn.on{background:#166534;color:#fff;border-color:#22c55e}
+/* PROBLEM BOX */
+.prob{background:#0c1a0d;border:1px solid #22c55e;border-left:4px solid #22c55e;border-radius:8px;padding:14px 16px;margin-bottom:12px}
+.prob-title{color:#22c55e;font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px}
+.prob-body{font-family:monospace;font-size:13px;color:#bbf7d0;line-height:1.8}
+/* SOLUTION STEPS */
+.sol{background:#020617;border-radius:8px;padding:12px 14px;margin-bottom:10px}
+.sol-title{color:#60a5fa;font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px}
+.step{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-bottom:1px solid #1e293b}
+.step:last-child{border-bottom:none}
+.sn{flex-shrink:0;width:24px;height:24px;border-radius:50%;background:#1d4ed8;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;margin-top:2px}
+.sn.g{background:#166534}.sn.a{background:#92400e}.sn.r{background:#991b1b}
+.st{font-family:monospace;font-size:13px;color:#cbd5e1;flex:1;line-height:1.7;white-space:pre-wrap}
+/* INPUTS */
+label{font-size:10px;color:#64748b;text-transform:uppercase;letter-spacing:.7px;display:block;margin:8px 0 3px}
+input,textarea,select{background:#020617;border:1px solid #334155;border-radius:6px;padding:8px 10px;color:#f1f5f9;font-size:13px;width:100%;font-family:monospace}
+input:focus,textarea:focus{outline:none;border-color:#3b82f6}
+.r2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.r3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
+/* BUTTONS */
+.go{background:#1d4ed8;color:#fff;border:none;border-radius:8px;padding:12px;font-size:14px;font-weight:700;cursor:pointer;width:100%;margin-top:8px}
+.load-btn{background:#1e3a5f;color:#60a5fa;border:1px solid #3b82f6;border-radius:6px;padding:6px 12px;font-size:11px;font-weight:700;cursor:pointer;margin-top:6px}
+/* CARDS */
+.card{background:#1e293b;border:1px solid #334155;border-radius:10px;padding:12px 14px;margin-bottom:10px}
+.card.bl{border-left:3px solid #3b82f6}
+.card.gr{border-left:3px solid #22c55e}
+.card.am{border-left:3px solid #f59e0b}
+.card.pu{border-left:3px solid #a855f7}
+.card.re{border-left:3px solid #ef4444}
+/* FORMULA BOXES */
+.fml{background:#020617;border-radius:6px;padding:9px 12px;font-family:monospace;font-size:12px;color:#93c5fd;margin:5px 0;line-height:1.8;border-left:3px solid #3b82f6;white-space:pre-wrap}
+.fml.g{border-left-color:#22c55e;color:#86efac}
+.fml.a{border-left-color:#f59e0b;color:#fbbf24}
+.fml.r{border-left-color:#ef4444;color:#fca5a5}
+.fml.p{border-left-color:#a855f7;color:#c4b5fd}
+/* RESULT BOXES */
+.ans{background:#14532d;border:1px solid #22c55e;border-radius:8px;padding:12px 14px;margin-top:8px}
+.ant{color:#22c55e;font-weight:700;font-size:11px;margin-bottom:5px}
+.exam{background:#1e1b4b;border:2px solid #818cf8;border-radius:8px;padding:12px 14px;margin-top:8px}
+.ext{color:#a5b4fc;font-weight:700;font-size:11px;margin-bottom:6px}
+.warn{background:#451a03;border:1px solid #f59e0b;border-radius:8px;padding:10px;font-size:12px;color:#fcd34d;margin:8px 0}
+/* TABLE */
+table{width:100%;border-collapse:collapse;font-size:12px;margin:6px 0}
+th{background:#1d4ed8;color:#fff;padding:7px 5px;text-align:center;font-size:11px}
+td{padding:6px 5px;border:1px solid #334155;text-align:center;color:#cbd5e1;vertical-align:middle}
+.tg{background:#14532d;color:#86efac;font-weight:700}
+.ta{background:#78350f;color:#fcd34d;font-weight:700}
+/* DIVIDER */
+.div{border-top:2px dashed #334155;margin:20px 0;padding-top:16px}
+.sec-label{font-size:12px;font-weight:700;color:#f59e0b;background:#78350f;border-radius:20px;padding:4px 12px;display:inline-block;margin-bottom:12px}
+/* CHAIN RULE HIGHLIGHT */
+.chain-box{background:#0c1a2e;border:1px solid #3b82f6;border-radius:8px;padding:14px;margin:8px 0}
+.chain-title{color:#60a5fa;font-weight:700;font-size:12px;margin-bottom:8px}
+.delta-box{background:#1a0f2e;border:1px solid #a855f7;border-radius:8px;padding:12px;margin:8px 0}
+.delta-title{color:#c4b5fd;font-weight:700;font-size:11px;margin-bottom:6px}
+/* VALUES */
+.vb{color:#60a5fa;font-weight:700}
+.vg{color:#4ade80;font-weight:700;font-size:14px}
+.vr{color:#f87171;font-weight:700}
+.va{color:#fbbf24;font-weight:700}
+.ep-header{font-size:13px;font-weight:700;color:#fff;background:#1e3a5f;border-radius:6px;padding:8px 12px;margin-bottom:8px}
+.hdg{font-size:10px;font-weight:700;color:#3b82f6;text-transform:uppercase;letter-spacing:.8px;border-bottom:1px solid #1d4ed8;padding-bottom:3px;margin:12px 0 8px}
+/* MBTN */
+.mrow{display:flex;gap:6px;margin-bottom:10px}
+.mbtn{flex:1;padding:9px;border-radius:7px;border:1px solid #334155;background:#1e293b;color:#64748b;cursor:pointer;font-size:12px;font-weight:600;text-align:center}
+.mbtn.on{background:#1d4ed8;color:#fff;border-color:#3b82f6}
+/* EPNAV */
+.epnav{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px}
+.epbtn{padding:6px 12px;border-radius:20px;border:1px solid #334155;background:#1e293b;color:#64748b;cursor:pointer;font-size:11px;font-weight:700}
+.epbtn.on{background:#166534;color:#fff;border-color:#22c55e}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="tab on" onclick="showTab('q1')">ข้อ 1<br>LinReg</div>
+  <div class="tab" onclick="showTab('q2a')">ข้อ 2a<br>DTree</div>
+  <div class="tab" onclick="showTab('q2b')">ข้อ 2b<br>KNN</div>
+  <div class="tab" onclick="showTab('q3')">ข้อ 3<br>K-Means</div>
+  <div class="tab" onclick="showTab('q4')">ข้อ 4<br>Backprop</div>
+  <div class="tab" onclick="showTab('q5')">ข้อ 5<br>Q-Learn</div>
+</nav>
+
+<!-- ═══════════════════ Q1 LINEAR REGRESSION ═══════════════════ -->
+<div class="pg on" id="pg-q1">
+
+<div class="sec-label">📚 โจทย์ตัวอย่าง — ดูก่อน แล้วค่อยกรอกข้างล่าง</div>
+<div style="font-size:12px;color:#64748b;margin-bottom:10px">กดเลือกดูโจทย์แต่ละแบบ แล้วกด "ใช้โจทย์นี้คำนวณ" เพื่อกรอกค่าอัตโนมัติ</div>
+
+<div class="exrow">
+  <div class="exbtn on" onclick="q1ShowEx(0)">ตย.1 — จากโน้ต (α=0.2)</div>
+  <div class="exbtn" onclick="q1ShowEx(1)">ตย.2 — α น้อยกว่า (α=0.1)</div>
+  <div class="exbtn" onclick="q1ShowEx(2)">ตย.3 — ข้อมูล 3 จุด</div>
+</div>
+
+<div id="q1-ex"></div>
+
+<div class="div">
+<div class="sec-label">🔢 กรอกค่าคำนวณเอง</div>
+
+<div class="fml" style="margin-bottom:12px">สูตร: h(x) = θ₀ + θ₁x  |  J(θ) = 1/(2n)×Σeᵢ²  |  eᵢ = h(xⁱ)−yⁱ
+Update: θ₀ := θ₀ − α×(1/n)Σeᵢ   θ₁ := θ₁ − α×(1/n)Σeᵢxᵢ
+กฎ: อัปเดต θ₀ และ θ₁ พร้อมกันทุกครั้ง ห้ามอัปทีละตัว</div>
+
+<div class="card">
+  <label>ข้อมูล (x,y) — ใส่ทีละบรรทัด เช่น 1,2 แล้ว enter</label>
+  <textarea id="q1pts" rows="5">1,2
+2,4
+3,5
+4,4
+5,5</textarea>
+</div>
+<div class="r2">
+  <div><label>θ₀ เริ่มต้น (theta_0)</label><input id="q1t0" value="0"></div>
+  <div><label>θ₁ เริ่มต้น (theta_1)</label><input id="q1t1" value="1"></div>
+</div>
+<div class="r2">
+  <div><label>α (Learning Rate อัตราเรียนรู้)</label><input id="q1al" value="0.2"></div>
+  <div><label>จำนวน Iterations (รอบ)</label><input id="q1ep" value="1"></div>
+</div>
+<button class="go" onclick="q1Calc()">⚡ คำนวณ</button>
+<div class="epnav" id="q1nav" style="display:none;margin-top:8px"></div>
+<div id="q1res"></div>
+</div>
+</div>
+
+<!-- ═══════════════════ Q2a DECISION TREE ═══════════════════ -->
+<div class="pg" id="pg-q2a">
+
+<div class="sec-label">📚 โจทย์ตัวอย่าง</div>
+<div class="exrow">
+  <div class="exbtn on" onclick="q2aShowEx(0)">ตย.1 — Sunny branch (2Y,3N)</div>
+  <div class="exbtn" onclick="q2aShowEx(1)">ตย.2 — Rainy branch (3Y,2N)</div>
+  <div class="exbtn" onclick="q2aShowEx(2)">ตย.3 — Root (9Y,5N) ทุก attribute</div>
+</div>
+<div id="q2a-ex"></div>
+
+<div class="div">
+<div class="sec-label">🔢 กรอกค่าคำนวณเอง</div>
+<div class="fml" style="margin-bottom:12px">Entropy:  H(S) = −p×log₂(p) − q×log₂(q)   (p=Yes/n, q=No/n)
+H บริสุทธิ์ (Pure): H=0 คือ class เดียว → เป็น Leaf node ทันที
+H(S|A) = Σᵥ (nᵥ/N) × H(Sᵥ)   (weighted average)
+IG(S,A) = H(S) − H(S|A)        → เลือก attribute ที่ IG สูงสุด</div>
+
+<div class="card">
+  <div class="r2">
+    <div><label>Yes ทั้งหมด</label><input id="q2aty" value="2"></div>
+    <div><label>No ทั้งหมด</label><input id="q2atn" value="3"></div>
+  </div>
+</div>
+<div id="q2a-attrs">
+  <div class="card" id="q2a-a0">
+    <div style="display:flex;gap:6px;margin-bottom:6px">
+      <input id="q2an0" value="Humidity" style="flex:1">
+      <button onclick="document.getElementById('q2a-a0').remove()" style="background:#7f1d1d;color:#fff;border:none;border-radius:5px;padding:5px 9px;cursor:pointer">✕</button>
+    </div>
+    <div style="display:flex;gap:5px;margin-bottom:5px;align-items:center">
+      <input id="q2a-s0-0-l" value="High" style="width:75px">
+      <span style="color:#64748b;font-size:11px">Y:</span><input id="q2a-s0-0-y" type="number" value="0" style="width:50px">
+      <span style="color:#64748b;font-size:11px">N:</span><input id="q2a-s0-0-n" type="number" value="3" style="width:50px">
+    </div>
+    <div style="display:flex;gap:5px;align-items:center">
+      <input id="q2a-s0-1-l" value="Normal" style="width:75px">
+      <span style="color:#64748b;font-size:11px">Y:</span><input id="q2a-s0-1-y" type="number" value="2" style="width:50px">
+      <span style="color:#64748b;font-size:11px">N:</span><input id="q2a-s0-1-n" type="number" value="0" style="width:50px">
+    </div>
+  </div>
+  <div class="card" id="q2a-a1">
+    <div style="display:flex;gap:6px;margin-bottom:6px">
+      <input id="q2an1" value="Temperature" style="flex:1">
+      <button onclick="document.getElementById('q2a-a1').remove()" style="background:#7f1d1d;color:#fff;border:none;border-radius:5px;padding:5px 9px;cursor:pointer">✕</button>
+    </div>
+    <div style="display:flex;gap:5px;margin-bottom:5px;align-items:center">
+      <input id="q2a-s1-0-l" value="Hot" style="width:75px">
+      <span style="color:#64748b;font-size:11px">Y:</span><input id="q2a-s1-0-y" type="number" value="0" style="width:50px">
+      <span style="color:#64748b;font-size:11px">N:</span><input id="q2a-s1-0-n" type="number" value="2" style="width:50px">
+    </div>
+    <div style="display:flex;gap:5px;margin-bottom:5px;align-items:center">
+      <input id="q2a-s1-1-l" value="Mild" style="width:75px">
+      <span style="color:#64748b;font-size:11px">Y:</span><input id="q2a-s1-1-y" type="number" value="1" style="width:50px">
+      <span style="color:#64748b;font-size:11px">N:</span><input id="q2a-s1-1-n" type="number" value="1" style="width:50px">
+    </div>
+    <div style="display:flex;gap:5px;align-items:center">
+      <input id="q2a-s1-2-l" value="Cool" style="width:75px">
+      <span style="color:#64748b;font-size:11px">Y:</span><input id="q2a-s1-2-y" type="number" value="1" style="width:50px">
+      <span style="color:#64748b;font-size:11px">N:</span><input id="q2a-s1-2-n" type="number" value="0" style="width:50px">
+    </div>
+  </div>
+  <div class="card" id="q2a-a2">
+    <div style="display:flex;gap:6px;margin-bottom:6px">
+      <input id="q2an2" value="Wind" style="flex:1">
+      <button onclick="document.getElementById('q2a-a2').remove()" style="background:#7f1d1d;color:#fff;border:none;border-radius:5px;padding:5px 9px;cursor:pointer">✕</button>
+    </div>
+    <div style="display:flex;gap:5px;margin-bottom:5px;align-items:center">
+      <input id="q2a-s2-0-l" value="Weak" style="width:75px">
+      <span style="color:#64748b;font-size:11px">Y:</span><input id="q2a-s2-0-y" type="number" value="1" style="width:50px">
+      <span style="color:#64748b;font-size:11px">N:</span><input id="q2a-s2-0-n" type="number" value="2" style="width:50px">
+    </div>
+    <div style="display:flex;gap:5px;align-items:center">
+      <input id="q2a-s2-1-l" value="Strong" style="width:75px">
+      <span style="color:#64748b;font-size:11px">Y:</span><input id="q2a-s2-1-y" type="number" value="1" style="width:50px">
+      <span style="color:#64748b;font-size:11px">N:</span><input id="q2a-s2-1-n" type="number" value="1" style="width:50px">
+    </div>
+  </div>
+</div>
+<button class="go" onclick="q2aCalc()">⚡ คำนวณ</button>
+<div id="q2ares"></div>
+</div>
+</div>
+
+<!-- ═══════════════════ Q2b KNN ═══════════════════ -->
+<div class="pg" id="pg-q2b">
+<div class="sec-label">📚 โจทย์ตัวอย่าง</div>
+<div class="exrow">
+  <div class="exbtn on" onclick="q2bShowEx(0)">ตย.1 — Q=(5,6) K=3 Euclidean</div>
+  <div class="exbtn" onclick="q2bShowEx(1)">ตย.2 — Q=(4,4) K=5</div>
+  <div class="exbtn" onclick="q2bShowEx(2)">ตย.3 — Q=(5,6) Manhattan</div>
+</div>
+<div id="q2b-ex"></div>
+
+<div class="div">
+<div class="sec-label">🔢 กรอกค่าคำนวณเอง</div>
+<div class="fml" style="margin-bottom:12px">Euclidean: d = √[(x₁−x₂)² + (y₁−y₂)²]
+Manhattan: d = |x₁−x₂| + |y₁−y₂|
+ขั้นตอน: คำนวณ d ทุกจุด → เรียงน้อยไปมาก → เลือก K ใกล้สุด → Majority Vote</div>
+<div class="card">
+  <label>จุด Training — (x,y,class) ทีละบรรทัด เช่น 1,1,C1</label>
+  <textarea id="q2bpts" rows="8">1,1,C1
+2,3,C1
+3,2,C1
+4,7,C1
+6,3,C2
+7,7,C2
+9,7,C2
+8,6,C2</textarea>
+</div>
+<div class="r3">
+  <div><label>Query X</label><input id="q2bqx" value="5"></div>
+  <div><label>Query Y</label><input id="q2bqy" value="6"></div>
+  <div><label>K</label><input id="q2bk" value="3"></div>
+</div>
+<div><label>Distance</label>
+  <select id="q2bmet"><option value="euc">Euclidean (√)</option><option value="man">Manhattan (|x|)</option></select>
+</div>
+<button class="go" onclick="q2bCalc()">⚡ คำนวณ</button>
+<div id="q2bres"></div>
+</div>
+</div>
+
+<!-- ═══════════════════ Q3 K-MEANS ═══════════════════ -->
+<div class="pg" id="pg-q3">
+<div class="sec-label">📚 โจทย์ตัวอย่าง</div>
+<div class="exrow">
+  <div class="exbtn on" onclick="q3ShowEx(0)">ตย.1 — K=2 จากโน้ต</div>
+  <div class="exbtn" onclick="q3ShowEx(1)">ตย.2 — K=2 Centroid ต่างกัน</div>
+  <div class="exbtn" onclick="q3ShowEx(2)">ตย.3 — K=3</div>
+</div>
+<div id="q3-ex"></div>
+
+<div class="div">
+<div class="sec-label">🔢 กรอกค่าคำนวณเอง</div>
+<div class="fml" style="margin-bottom:12px">d(P,C) = √[(xₚ−xc)² + (yₚ−yc)²]
+Centroid ใหม่: x̄ = mean(x ทุก point ใน cluster), ȳ = mean(y)
+หยุดเมื่อ: Centroid ไม่เปลี่ยน (Converged)</div>
+<div class="card"><label>จุดข้อมูล (x,y) ทีละบรรทัด</label>
+<textarea id="q3pts" rows="7">1,1
+2,3
+3,2
+4,5
+6,5
+9,7
+8,6</textarea></div>
+<div class="card"><label>Centroids เริ่มต้น (x,y) ทีละบรรทัด | K = จำนวนบรรทัด</label>
+<textarea id="q3cents" rows="2">2,2
+9,6</textarea></div>
+<div><label>Max Iterations</label><input id="q3max" value="5" style="width:100px"></div>
+<button class="go" onclick="q3Calc()">⚡ คำนวณ</button>
+<div class="epnav" id="q3nav" style="display:none;margin-top:8px"></div>
+<div id="q3res"></div>
+</div>
+</div>
+
+<!-- ═══════════════════ Q4 BACKPROP ═══════════════════ -->
+<div class="pg" id="pg-q4">
+<div class="sec-label">📚 โจทย์ตัวอย่าง</div>
+<div class="exrow">
+  <div class="exbtn on" onclick="q4ShowEx(0)">ตย.1 — จากโน้ต (X1=1,X2=2,y=0)</div>
+  <div class="exbtn" onclick="q4ShowEx(1)">ตย.2 — 3 Epochs (X1=0.5,X2=0.7,y=1)</div>
+  <div class="exbtn" onclick="q4ShowEx(2)">ตย.3 — 3 Inputs (X1,X2,X3)</div>
+</div>
+<div id="q4-ex"></div>
+
+<div class="div">
+<div class="sec-label">🔢 กรอกค่าคำนวณเอง</div>
+<div class="chain-box">
+  <div class="chain-title">⭐ Chain Rule Notation (Primary — เขียนแบบนี้ในข้อสอบ)</div>
+  <div style="font-family:monospace;font-size:12px;color:#93c5fd;line-height:1.8">
+    Forward: z = W₁x₁ + W₂x₂ + b → a = σ(z) = 1/(1+e⁻ᶻ)<br>
+    Loss: L = ½(y − a)²<br>
+    ∂L/∂a = −(y−a) = (a−y)<br>
+    ∂a/∂z = a(1−a)<br>
+    ∂z/∂wⱼ = xⱼ, ∂z/∂b = 1<br>
+    ∂L/∂wⱼ = ∂L/∂a × ∂a/∂z × ∂z/∂wⱼ = (a−y)×a(1−a)×xⱼ<br>
+    wⱼ_new = wⱼ − η × ∂L/∂wⱼ
+  </div>
+</div>
+<div class="delta-box">
+  <div class="delta-title">δ Notation (Secondary — ผลลัพธ์เหมือนกัน)</div>
+  <div style="font-family:monospace;font-size:12px;color:#c4b5fd;line-height:1.8">
+    δ = (a−y) × a(1−a)  ← รวม ∂L/∂a × ∂a/∂z เป็นตัวเดียว<br>
+    wⱼ_new = wⱼ − α × δ × xⱼ
+  </div>
+</div>
+
+<div class="mrow">
+  <div class="mbtn on" id="q4m1" onclick="q4SetMode('single')">Single Neuron<br><small>หลาย inputs → 1 output</small></div>
+  <div class="mbtn" id="q4m2" onclick="q4SetMode('two')">2-Layer (3 Nodes)<br><small>input→hidden→output</small></div>
+</div>
+
+<div id="q4-single">
+  <div class="card"><label>Input X (X1,X2,...) — คั่น comma</label><input id="q4xs" value="1,2"></div>
+  <div class="card"><label>Weights W (W1,W2,...) — ต้องตรงกับจำนวน X</label><input id="q4ws" value="0.1,0.5" style="border-color:#a78bfa"></div>
+  <div class="card"><label>Bias b</label><input id="q4b" value="-0.2" style="border-color:#34d399"></div>
+  <div class="r3">
+    <div><label>Target y</label><input id="q4y" value="0" style="border-color:#f87171"></div>
+    <div><label>η (Learning Rate)</label><input id="q4al" value="0.5"></div>
+    <div><label>Epochs</label><input id="q4ep" value="1"></div>
+  </div>
+</div>
+
+<div id="q4-two" style="display:none">
+  <div class="card" style="border-left:3px solid #a855f7">
+    <div style="font-size:11px;color:#c4b5fd;font-weight:700;margin-bottom:6px">HIDDEN LAYER</div>
+    <label>Input X (X1,X2,...)</label><input id="q4txs" value="0.5,0.3">
+    <label>W_hidden (Wh1,Wh2,...)</label><input id="q4twhs" value="0.4,0.2" style="border-color:#a78bfa">
+    <label>b_hidden</label><input id="q4tbh" value="0.1" style="border-color:#34d399">
+  </div>
+  <div class="card" style="border-left:3px solid #3b82f6">
+    <div style="font-size:11px;color:#93c5fd;font-weight:700;margin-bottom:6px">OUTPUT LAYER</div>
+    <label>W_out</label><input id="q4two" value="0.6" style="border-color:#a78bfa">
+    <label>b_out</label><input id="q4tbo" value="0.0" style="border-color:#34d399">
+  </div>
+  <div class="r3">
+    <div><label>Target y</label><input id="q4ty" value="1.0" style="border-color:#f87171"></div>
+    <div><label>η</label><input id="q4tal" value="0.1"></div>
+    <div><label>Epochs</label><input id="q4tep" value="1"></div>
+  </div>
+</div>
+
+<button class="go" onclick="q4Calc()">⚡ คำนวณ</button>
+<div class="epnav" id="q4nav" style="display:none;margin-top:8px"></div>
+<div id="q4res"></div>
+</div>
+</div>
+
+<!-- ═══════════════════ Q5 Q-LEARNING ═══════════════════ -->
+<div class="pg" id="pg-q5">
+<div class="sec-label">📚 โจทย์ตัวอย่าง</div>
+<div class="exrow">
+  <div class="exbtn on" onclick="q5ShowEx(0)">ตย.1 — QL.pdf: 6 rooms γ=0.8</div>
+  <div class="exbtn" onclick="q5ShowEx(1)">ตย.2 — เส้นทาง 0→4→5</div>
+  <div class="exbtn" onclick="q5ShowEx(2)">ตย.3 — γ=0.9</div>
+</div>
+<div id="q5-ex"></div>
+
+<div class="div">
+<div class="sec-label">🔢 กรอกค่าคำนวณเอง</div>
+<div class="fml" style="margin-bottom:12px">Q(s,a) = R(s,a) + γ × max[Q(s', all actions)]
+R=−1 : ทางปิด ข้ามไม่ได้ | R=0 : ผ่านได้ | R=100 : GOAL!
+Q-table เริ่มต้น = 0 ทุกช่อง | s' คือ state ถัดไปหลัง action a</div>
+<div class="card"><label>R-Matrix (ทีละแถว คั่น comma | แถว i = State i, คอลัมน์ j = action ไป State j)</label>
+<textarea id="q5rm" rows="6" style="font-size:11px">-1,-1,-1,-1,0,-1
+-1,-1,-1,0,-1,100
+-1,-1,-1,0,-1,-1
+-1,0,0,-1,0,-1
+0,-1,-1,0,-1,100
+-1,0,-1,-1,0,100</textarea></div>
+<div class="r2">
+  <div><label>จำนวน States N</label><input id="q5ns" value="6"></div>
+  <div><label>γ (Discount Factor)</label><input id="q5gm" value="0.8"></div>
+</div>
+<div class="card"><label>Episodes (State path) ทีละบรรทัด เช่น 1,5 หรือ 3,1,5</label>
+<textarea id="q5eps" rows="4">1,5
+3,1,5
+0,4,5
+2,3,1,5</textarea></div>
+<button class="go" onclick="q5Calc()">⚡ คำนวณ</button>
+<div id="q5res"></div>
+</div>
+</div>
+
+<script>
+/* ═══ UTILS ═══ */
+var sig=function(z){return 1/(1+Math.exp(-z));};
+var log2=function(x){return x>0?Math.log2(x):0;};
+var ent=function(y,n){var t=y+n;if(!t)return 0;var p=y/t,q=n/t;return -(p>0?p*log2(p):0)-(q>0?q*log2(q):0);};
+var euc=function(a,b){return Math.sqrt(a.reduce(function(s,v,i){return s+(v-b[i])*(v-b[i]);},0));};
+var f=function(n,d){d=d===undefined?4:d;return(typeof n==='number'&&isFinite(n))?parseFloat(n.toFixed(d)).toString():String(n);};
+var f2=function(n){return f(n,4);};
+var clrC=['#3b82f6','#f59e0b','#a855f7','#22c55e','#ef4444'];
+
+/* ═══ TAB ═══ */
+function showTab(t){
+  document.querySelectorAll('.pg').forEach(function(p){p.className='pg';});
+  document.querySelectorAll('.tab').forEach(function(b){b.className='tab';});
+  document.getElementById('pg-'+t).className='pg on';
+  var m={'q1':0,'q2a':1,'q2b':2,'q3':3,'q4':4,'q5':5};
+  document.querySelectorAll('.tab')[m[t]].className='tab on';
+}
+
+/* ══════════════════════════════════════════════════════════
+   Q1 — LINEAR REGRESSION
+══════════════════════════════════════════════════════════ */
+var Q1_EX=[
+  {
+    pts:"1,2\n2,4\n3,5\n4,4\n5,5",t0:"0",t1:"1",al:"0.2",ep:"1",
+    title:"ตัวอย่าง 1 — จากโน้ต (อาจารย์ออกแบบนี้บ่อยมาก)",
+    desc:"โจทย์ให้: Data 5 จุด θ₀=0, θ₁=1, α=0.2 จงคำนวณ J(θ) เริ่มต้น และอัปเดต θ หลัง 1 Iteration\nข้อมูล: (x,y) = (1,2),(2,4),(3,5),(4,4),(5,5)"
+  },
+  {
+    pts:"1,2\n2,4\n3,5\n4,4\n5,5",t0:"0",t1:"1",al:"0.05",ep:"2",
+    title:"ตัวอย่าง 2 — พลิกแปลง: α เล็กกว่า (α=0.05) 2 Iterations",
+    desc:"โจทย์ให้: Data เดิม แต่ α=0.05 จงทำ 2 Iterations\nสังเกต: Cost จะลดลง (ต่างจาก α=0.2 ที่ Cost เพิ่มขึ้น)"
+  },
+  {
+    pts:"2,3\n4,5\n6,4",t0:"0",t1:"0.5",al:"0.1",ep:"1",
+    title:"ตัวอย่าง 3 — พลิกแปลง: ข้อมูล 3 จุด θ₁ เริ่มต้น=0.5",
+    desc:"โจทย์ให้: (2,3),(4,5),(6,4) | θ₀=0, θ₁=0.5, α=0.1\nรูปแบบนี้ข้อมูลน้อยกว่าปกติ"
+  }
+];
+
+function q1ShowEx(i){
+  document.querySelectorAll('#pg-q1 .exbtn').forEach(function(b,j){b.className='exbtn'+(j===i?' on':'');});
+  var ex=Q1_EX[i];
+  var html='<div class="prob"><div class="prob-title">📝 โจทย์</div><div class="prob-body">'+ex.desc+'</div>';
+  html+='<button class="load-btn" onclick="q1LoadEx('+i+')">📋 ใช้โจทย์นี้คำนวณ (กรอกค่าอัตโนมัติ)</button></div>';
+  html+=q1SolveStatic(ex);
+  document.getElementById('q1-ex').innerHTML=html;
+}
+function q1LoadEx(i){
+  var ex=Q1_EX[i];
+  document.getElementById('q1pts').value=ex.pts;
+  document.getElementById('q1t0').value=ex.t0;
+  document.getElementById('q1t1').value=ex.t1;
+  document.getElementById('q1al').value=ex.al;
+  document.getElementById('q1ep').value=ex.ep;
+  document.getElementById('q1res').innerHTML='<div class="warn">✅ กรอกค่าแล้ว กด ⚡ คำนวณ เพื่อดูวิธีทำพร้อมตรวจคำตอบ</div>';
+}
+function q1SolveStatic(ex){
+  var pts=ex.pts.trim().split('\n').map(function(l){var p=l.split(',');return{x:+p[0],y:+p[1]};});
+  var t0=+ex.t0,t1=+ex.t1,al=+ex.al,ep=+ex.ep,n=pts.length;
+  var out='<div class="sol"><div class="sol-title">✅ วิธีทำทีละขั้น</div>';
+  for(var e=0;e<ep;e++){
+    out+='<div class="ep-header">Iteration '+(e+1)+' — ใช้ θ₀='+f2(t0)+', θ₁='+f2(t1)+'</div>';
+    out+='<div class="step"><div class="sn">1</div><div class="st"><b style="color:#fff">คำนวณ h(xⁱ) = θ₀ + θ₁xⁱ สำหรับทุก i แล้วหา eᵢ = h(xⁱ) − yⁱ</b></div></div>';
+    var rows=pts.map(function(p){var h=t0+t1*p.x,err=h-p.y;return{x:p.x,y:p.y,h:h,e:err,e2:err*err,ex:err*p.x};});
+    var sE=rows.reduce(function(s,r){return s+r.e;},0);
+    var sEX=rows.reduce(function(s,r){return s+r.ex;},0);
+    var sE2=rows.reduce(function(s,r){return s+r.e2;},0);
+    var J=sE2/(2*n);
+    var g0=sE/n,g1=sEX/n;
+    var nt0=t0-al*g0,nt1=t1-al*g1;
+    out+='<div style="overflow-x:auto"><table><thead><tr><th>i</th><th>x</th><th>y</th><th>h(x)</th><th>eᵢ=h−y</th><th>eᵢ²</th><th>eᵢ×xᵢ</th></tr></thead><tbody>';
+    rows.forEach(function(r,i){out+='<tr><td>'+(i+1)+'</td><td>'+r.x+'</td><td>'+r.y+'</td><td>'+f2(r.h)+'</td><td style="color:#f87171">'+f2(r.e)+'</td><td>'+f2(r.e2)+'</td><td>'+f2(r.ex)+'</td></tr>';});
+    out+='<tr><td colspan="4" style="text-align:right;font-weight:700">Sum</td><td></td><td class="tg">'+f2(sE2)+'</td><td class="tg">'+f2(sEX)+'</td></tr></tbody></table></div>';
+    out+='<div class="step"><div class="sn">2</div><div class="st"><b style="color:#fff">คำนวณ Cost Function J(θ)</b>\nJ(θ) = 1/(2×'+n+') × Σeᵢ² = '+f2(sE2)+'/('+2*n+') = <b style="color:#4ade80;font-size:14px">'+f2(J)+'</b></div></div>';
+    out+='<div class="step"><div class="sn g">3</div><div class="st"><b style="color:#fff">คำนวณ Gradient (∂J/∂θ)</b>\n∂J/∂θ₀ = (1/'+n+') × Σeᵢ = '+f2(sE)+'/'+n+' = <b style="color:#fbbf24">'+f2(g0)+'</b>\n∂J/∂θ₁ = (1/'+n+') × Σeᵢxᵢ = '+f2(sEX)+'/'+n+' = <b style="color:#fbbf24">'+f2(g1)+'</b></div></div>';
+    out+='<div class="step"><div class="sn g">4</div><div class="st"><b style="color:#fff">Update θ₀ และ θ₁ พร้อมกัน (α='+al+')</b>\nθ₀_new = '+f2(t0)+' − ('+al+')×('+f2(g0)+') = '+f2(t0)+' − '+f2(al*g0)+' = <b style="color:#4ade80;font-size:14px">'+f2(nt0)+'</b>\nθ₁_new = '+f2(t1)+' − ('+al+')×('+f2(g1)+') = '+f2(t1)+' − '+f2(al*g1)+' = <b style="color:#4ade80;font-size:14px">'+f2(nt1)+'</b>\n→ สมการใหม่: h(x) = '+f2(nt0)+' + '+f2(nt1)+'x</div></div>';
+    t0=nt0;t1=nt1;
+  }
+  out+='</div>';
+  return out;
+}
+
+/* ════ Q1 CALC ════ */
+var q1Rounds=[];
+function q1Calc(){
+  var pts=document.getElementById('q1pts').value.trim().split('\n').map(function(l){var p=l.split(',');return{x:+p[0],y:+p[1]};});
+  var t0=+document.getElementById('q1t0').value,t1=+document.getElementById('q1t1').value;
+  var al=+document.getElementById('q1al').value,ep=+document.getElementById('q1ep').value;
+  q1Rounds=[];var n=pts.length;
+  for(var e=0;e<ep;e++){
+    var rows=pts.map(function(p){var h=t0+t1*p.x,err=h-p.y;return{x:p.x,y:p.y,h:h,e:err,e2:err*err,ex:err*p.x};});
+    var sE=rows.reduce(function(s,r){return s+r.e;},0);
+    var sEX=rows.reduce(function(s,r){return s+r.ex;},0);
+    var J=rows.reduce(function(s,r){return s+r.e2;},0)/(2*n);
+    var g0=sE/n,g1=sEX/n,nt0=t0-al*g0,nt1=t1-al*g1;
+    q1Rounds.push({ep:e+1,rows:rows,t0:t0,t1:t1,J:J,g0:g0,g1:g1,nt0:nt0,nt1:nt1,al:al,n:n});
+    t0=nt0;t1=nt1;
+  }
+  var nav=document.getElementById('q1nav');nav.style.display='flex';nav.innerHTML='';
+  q1Rounds.forEach(function(r,i){var b=document.createElement('div');b.className='epbtn'+(i===0?' on':'');b.textContent='Iter '+r.ep;b.setAttribute('data-i',i);b.onclick=function(){var idx=+this.getAttribute('data-i');document.querySelectorAll('#q1nav .epbtn').forEach(function(x,j){x.className='epbtn'+(j===idx?' on':'');});q1ShowRound(idx);};nav.appendChild(b);});
+  q1ShowRound(0);
+}
+function q1ShowRound(idx){
+  var r=q1Rounds[idx];
+  var h='<div class="card am"><div class="ep-header">Iteration '+r.ep+' | θ₀='+f2(r.t0)+', θ₁='+f2(r.t1)+'</div>';
+  h+='<div class="hdg">Step 1: คำนวณ h(x) และ eᵢ</div>';
+  h+='<div style="overflow-x:auto"><table><thead><tr><th>i</th><th>x</th><th>y</th><th>h(x)=θ₀+θ₁x</th><th>eᵢ=h−y</th><th>eᵢ²</th><th>eᵢ×xᵢ</th></tr></thead><tbody>';
+  r.rows.forEach(function(row,i){h+='<tr><td>'+(i+1)+'</td><td>'+row.x+'</td><td>'+row.y+'</td><td>'+f2(row.h)+'</td><td style="color:#f87171">'+f2(row.e)+'</td><td>'+f2(row.e2)+'</td><td>'+f2(row.ex)+'</td></tr>';});
+  h+='</tbody></table></div>';
+  h+='<div class="fml a">Step 2: J(θ) = 1/(2×'+r.n+') × Σeᵢ² = <b style="color:#fff;font-size:14px">'+f2(r.J)+'</b></div>';
+  h+='<div class="fml g">Step 3: ∂J/∂θ₀ = Σeᵢ/'+r.n+' = <b>'+f2(r.g0)+'</b>\n∂J/∂θ₁ = Σeᵢxᵢ/'+r.n+' = <b>'+f2(r.g1)+'</b></div>';
+  h+='<div class="ans"><div class="ant">✅ Step 4: อัปเดต (เขียนในข้อสอบ)</div><div style="font-family:monospace;font-size:12px;color:#bbf7d0">θ₀_new = '+f2(r.t0)+' − ('+r.al+')('+f2(r.g0)+') = <b>'+f2(r.nt0)+'</b>\nθ₁_new = '+f2(r.t1)+' − ('+r.al+')('+f2(r.g1)+') = <b>'+f2(r.nt1)+'</b>\nสมการใหม่: h(x) = '+f2(r.nt0)+' + '+f2(r.nt1)+'x</div></div>';
+  if(r.nt0!==undefined){var j2=q1Rounds[idx+1];if(j2&&j2.J>r.J){h+='<div class="warn">⚠ Cost เพิ่มขึ้น '+f2(r.J)+' → '+f2(j2.J)+' แสดงว่า α ใหญ่เกิน (Overshoot)</div>';}else if(j2){h+='<div class="fml g" style="margin-top:6px">✅ Cost ลดลง '+f2(r.J)+' → '+f2(j2.J)+' (α เหมาะสม)</div>';}}
+  h+='</div>';
+  document.getElementById('q1res').innerHTML=h;
+}
+
+/* ══════════════════════════════════════════════════════════
+   Q2a — DECISION TREE
+══════════════════════════════════════════════════════════ */
+var Q2A_EX=[
+  {
+    ty:2,tn:3,
+    attrs:[{name:"Humidity",splits:[{l:"High",y:0,n:3},{l:"Normal",y:2,n:0}]},{name:"Temperature",splits:[{l:"Hot",y:0,n:2},{l:"Mild",y:1,n:1},{l:"Cool",y:1,n:0}]},{name:"Wind",splits:[{l:"Weak",y:1,n:2},{l:"Strong",y:1,n:1}]}],
+    title:"ตัวอย่าง 1 — Sunny Branch (2Y,3N) จากโน้ต",
+    desc:"Root=Outlook ทำให้ Sunny branch มี 2 Yes, 3 No\nจงหา IG ของ Humidity, Temperature, Wind\nแล้วเลือก Child Node ที่เหมาะสมที่สุด"
+  },
+  {
+    ty:3,tn:2,
+    attrs:[{name:"Wind",splits:[{l:"Weak",y:3,n:0},{l:"Strong",y:0,n:2}]},{name:"Temperature",splits:[{l:"Mild",y:2,n:0},{l:"Cool",y:1,n:2}]},{name:"Humidity",splits:[{l:"High",y:1,n:1},{l:"Normal",y:2,n:1}]}],
+    title:"ตัวอย่าง 2 — Rainy Branch (3Y,2N) จากโน้ต",
+    desc:"Rainy branch มี 3 Yes, 2 No\nจงหา IG ของ Wind, Temperature, Humidity\nเลือก Child Node ที่มี IG สูงสุด"
+  },
+  {
+    ty:9,tn:5,
+    attrs:[{name:"Outlook",splits:[{l:"Sunny",y:2,n:3},{l:"Overcast",y:4,n:0},{l:"Rainy",y:3,n:2}]},{name:"Wind",splits:[{l:"Weak",y:6,n:2},{l:"Strong",y:3,n:3}]},{name:"Humidity",splits:[{l:"High",y:3,n:4},{l:"Normal",y:6,n:1}]}],
+    title:"ตัวอย่าง 3 — Root Node (9Y,5N) ทั้ง Dataset",
+    desc:"Dataset ทั้งหมด 14 ตัวอย่าง มี 9 Yes, 5 No\nจงหา IG ของ Outlook, Wind, Humidity\nเพื่อเลือก Root Node"
+  }
+];
+
+function q2aShowEx(i){
+  document.querySelectorAll('#pg-q2a .exbtn').forEach(function(b,j){b.className='exbtn'+(j===i?' on':'');});
+  var ex=Q2A_EX[i];
+  var html='<div class="prob"><div class="prob-title">📝 โจทย์</div><div class="prob-body">'+ex.desc+'</div>';
+  html+='<button class="load-btn" onclick="q2aLoadEx('+i+')">📋 ใช้โจทย์นี้คำนวณ</button></div>';
+  html+=q2aSolve(ex.ty,ex.tn,ex.attrs);
+  document.getElementById('q2a-ex').innerHTML=html;
+}
+function q2aLoadEx(i){
+  document.getElementById('q2ares').innerHTML='<div class="warn">✅ กด ⚡ คำนวณ เพื่อดูผล (ตัวเลขในช่องคำนวณเป็นค่าของตัวอย่าง 1 เท่านั้น)</div>';
+}
+function q2aSolve(ty,tn,attrs){
+  var T=ty+tn,Hr=ent(ty,tn);
+  var out='<div class="sol"><div class="sol-title">✅ วิธีทำทีละขั้น</div>';
+  out+='<div class="step"><div class="sn">1</div><div class="st"><b style="color:#fff">H(S) = Entropy ของข้อมูลทั้งหมด ('+ty+' Yes, '+tn+' No)</b>\nH(S) = −('+ty+'/'+T+')×log₂('+ty+'/'+T+') − ('+tn+'/'+T+')×log₂('+tn+'/'+T+')\n= <b style="color:#4ade80;font-size:14px">'+f2(Hr)+'</b></div></div>';
+  var igs=attrs.map(function(at){
+    var sps=at.splits.map(function(sp){var n_=sp.y+sp.n,H_=ent(sp.y,sp.n),w=T?n_/T:0;return{l:sp.l,y:sp.y,n:sp.n,n_:n_,H_:H_,w:w,wH:w*H_,pure:sp.y===0||sp.n===0};});
+    var Hc=sps.reduce(function(s,sp){return s+sp.wH;},0);
+    return{name:at.name,sps:sps,Hc:Hc,IG:Hr-Hc};
+  });
+  var best=igs.reduce(function(b,a){return a.IG>b.IG?a:b;},igs[0]);
+  igs.forEach(function(at,ai){
+    var isBest=at.name===best.name;
+    out+='<div class="step"><div class="sn'+(isBest?' a':'')+'>'+(ai+2)+'</div><div class="st"><b style="color:#fff">IG('+at.name+')</b>';
+    out+='\nH(S|'+at.name+') = ';
+    out+=at.sps.map(function(sp){return'('+sp.n_+'/'+T+')×'+f2(sp.H_);}).join(' + ');
+    out+=' = '+f2(at.Hc);
+    out+='\n<b>IG('+at.name+') = '+f2(Hr)+' − '+f2(at.Hc)+' = '+(isBest?'<b style="color:#fbbf24;font-size:14px">':'<b>')+f2(at.IG)+'</b></b>';
+    out+='<table style="margin-top:6px"><thead><tr><th>Value</th><th>Yes</th><th>No</th><th>n</th><th>H(Sv)</th><th>Pure?</th></tr></thead><tbody>';
+    at.sps.forEach(function(sp){out+='<tr><td>'+sp.l+'</td><td>'+sp.y+'</td><td>'+sp.n+'</td><td>'+sp.n_+'</td><td class="'+(sp.pure?'tg':'')+'">'+f2(sp.H_)+'</td><td class="'+(sp.pure?'tg':'')+'">'+( sp.pure?'✅ Leaf':'')+'</td></tr>';});
+    out+='</tbody></table></div></div>';
+  });
+  out+='<div class="ans"><div class="ant">✅ สรุป: เลือก '+best.name+' (IG='+f2(best.IG)+' สูงสุด) เป็น Node</div>';
+  out+='<div style="font-family:monospace;font-size:12px;color:#bbf7d0">';
+  best.sps.forEach(function(sp){out+='  '+best.name+'='+sp.l+' → '+(sp.pure?(sp.y>0?'Leaf: YES':'Leaf: NO'):'แตก Branch ต่อ')+'<br>';});
+  out+='</div></div></div>';
+  return out;
+}
+
+function q2aCalc(){
+  var ty=+document.getElementById('q2aty').value,tn=+document.getElementById('q2atn').value;
+  var attrs=[];var i=0;
+  while(document.getElementById('q2an'+i)){
+    var name=document.getElementById('q2an'+i).value;
+    var splits=[];var j=0;
+    while(document.getElementById('q2a-s'+i+'-'+j+'-l')){
+      splits.push({l:document.getElementById('q2a-s'+i+'-'+j+'-l').value,y:+document.getElementById('q2a-s'+i+'-'+j+'-y').value,n:+document.getElementById('q2a-s'+i+'-'+j+'-n').value});
+      j++;
+    }
+    attrs.push({name:name,splits:splits});i++;
+  }
+  document.getElementById('q2ares').innerHTML=q2aSolve(ty,tn,attrs);
+}
+
+/* ══════════════════════════════════════════════════════════
+   Q2b — KNN
+══════════════════════════════════════════════════════════ */
+var Q2B_EX=[
+  {
+    pts:"1,1,C1\n2,3,C1\n3,2,C1\n4,7,C1\n6,3,C2\n7,7,C2\n9,7,C2\n8,6,C2",qx:"5",qy:"6",k:"3",met:"euc",
+    title:"ตัวอย่าง 1 — Q=(5,6) K=3 Euclidean",
+    desc:"โจทย์ให้: 8 จุด Training | Query Point Q=(5,6) | K=3 | Euclidean Distance\nจงหา 3 จุดที่ใกล้ Q มากที่สุด แล้วบอก class"
+  },
+  {
+    pts:"1,1,C1\n2,3,C1\n3,2,C1\n4,7,C1\n6,3,C2\n7,7,C2\n9,7,C2\n8,6,C2",qx:"4",qy:"4",k:"5",met:"euc",
+    title:"ตัวอย่าง 2 — พลิกแปลง: Q=(4,4) K=5",
+    desc:"โจทย์ให้: ข้อมูลเดิม แต่ Query=(4,4) และ K=5\nสังเกต: K เยอะขึ้น อาจเปลี่ยน class ที่ได้"
+  },
+  {
+    pts:"1,1,C1\n2,3,C1\n3,2,C1\n4,7,C1\n6,3,C2\n7,7,C2\n9,7,C2\n8,6,C2",qx:"5",qy:"6",k:"3",met:"man",
+    title:"ตัวอย่าง 3 — พลิกแปลง: Manhattan Distance",
+    desc:"โจทย์ให้: ข้อมูลเดิม Q=(5,6) K=3 แต่ใช้ Manhattan Distance\nd = |x₁−x₂| + |y₁−y₂|"
+  }
+];
+
+function q2bShowEx(i){
+  document.querySelectorAll('#pg-q2b .exbtn').forEach(function(b,j){b.className='exbtn'+(j===i?' on':'');});
+  var ex=Q2B_EX[i];
+  var html='<div class="prob"><div class="prob-title">📝 โจทย์</div><div class="prob-body">'+ex.desc+'</div>';
+  html+='<button class="load-btn" onclick="q2bLoadEx('+i+')">📋 ใช้โจทย์นี้คำนวณ</button></div>';
+  html+=q2bSolve(ex);
+  document.getElementById('q2b-ex').innerHTML=html;
+}
+function q2bLoadEx(i){
+  var ex=Q2B_EX[i];
+  document.getElementById('q2bpts').value=ex.pts;
+  document.getElementById('q2bqx').value=ex.qx;document.getElementById('q2bqy').value=ex.qy;
+  document.getElementById('q2bk').value=ex.k;document.getElementById('q2bmet').value=ex.met;
+  document.getElementById('q2bres').innerHTML='<div class="warn">✅ กรอกค่าแล้ว กด ⚡ คำนวณ</div>';
+}
+function q2bSolve(ex){
+  var pts=ex.pts.trim().split('\n').map(function(l){var p=l.split(',');return{x:+p[0],y:+p[1],cls:p[2]};});
+  var qx=+ex.qx,qy=+ex.qy,K=+ex.k,met=ex.met;
+  var wd=pts.map(function(p){
+    var d=met==='euc'?Math.sqrt((p.x-qx)*(p.x-qx)+(p.y-qy)*(p.y-qy)):Math.abs(p.x-qx)+Math.abs(p.y-qy);
+    var fm=met==='euc'?'√[('+qx+'-'+p.x+')²+('+qy+'-'+p.y+')²]='+f2(d):'|'+qx+'-'+p.x+'|+|'+qy+'-'+p.y+'|='+f2(d);
+    return{x:p.x,y:p.y,cls:p.cls,d:d,fm:fm};
+  }).sort(function(a,b){return a.d-b.d;});
+  var knn=wd.slice(0,K);
+  var vote={};knn.forEach(function(p){vote[p.cls]=(vote[p.cls]||0)+1;});
+  var winner=Object.entries(vote).sort(function(a,b){return b[1]-a[1];})[0];
+  var out='<div class="sol"><div class="sol-title">✅ วิธีทำ</div>';
+  out+='<div class="step"><div class="sn">1</div><div class="st"><b style="color:#fff">คำนวณ Distance จาก Q=('+qx+','+qy+') ไปทุกจุด ('+met==='euc'?'Euclidean':'Manhattan'+')</b></div></div>';
+  out+='<div style="overflow-x:auto"><table><thead><tr><th>อันดับ</th><th>จุด</th><th>class</th><th>การคำนวณ d</th><th>d</th><th>K?</th></tr></thead><tbody>';
+  wd.forEach(function(p,i){out+='<tr><td>'+(i+1)+'</td><td>('+p.x+','+p.y+')</td><td>'+p.cls+'</td><td style="text-align:left;font-family:monospace;font-size:11px">'+p.fm+'</td><td class="'+(i<K?'tg':'')+'">'+f2(p.d)+'</td><td class="'+(i<K?'tg':'')+'">'+( i<K?'✅ #'+(i+1):'')+'</td></tr>';});
+  out+='</tbody></table></div>';
+  out+='<div class="step"><div class="sn g">2</div><div class="st"><b style="color:#fff">Top K='+K+' → Vote</b>\n'+knn.map(function(p,i){return(i+1)+'. ('+p.x+','+p.y+') → '+p.cls;}).join('\n')+'</div></div>';
+  out+='<div class="ans"><div class="ant">✅ ผล Vote: '+Object.entries(vote).map(function(kv){return kv[0]+'='+kv[1];}).join(' | ')+'</div>';
+  out+='<div style="font-family:monospace;font-size:14px;color:#4ade80;font-weight:700">🎯 จำแนกเป็น Class: '+winner[0]+'</div></div></div>';
+  return out;
+}
+function q2bCalc(){
+  var ex={pts:document.getElementById('q2bpts').value,qx:document.getElementById('q2bqx').value,qy:document.getElementById('q2bqy').value,k:document.getElementById('q2bk').value,met:document.getElementById('q2bmet').value};
+  document.getElementById('q2bres').innerHTML=q2bSolve(ex);
+}
+
+/* ══════════════════════════════════════════════════════════
+   Q3 — K-MEANS
+══════════════════════════════════════════════════════════ */
+var Q3_EX=[
+  {pts:"1,1\n2,3\n3,2\n4,5\n6,5\n9,7\n8,6",cents:"2,2\n9,6",max:"3",title:"ตัวอย่าง 1 — K=2 จากโน้ต C1=(2,2), C2=(9,6)",desc:"โจทย์ให้: 7 จุด A(1,1)..G(8,6) | K=2 | C1=(2,2), C2=(9,6)\nจงทำ 2 รอบและแสดง Centroid ใหม่"},
+  {pts:"1,1\n2,3\n3,2\n4,5\n6,5\n9,7\n8,6",cents:"1,2\n7,5",max:"3",title:"ตัวอย่าง 2 — พลิกแปลง: Centroid เริ่มต้นต่างกัน",desc:"โจทย์ให้: ข้อมูลเดิม แต่ C1=(1,2), C2=(7,5)\nสังเกต: Centroid เริ่มต้นต่างกัน → ผลอาจต่าง"},
+  {pts:"1,2\n2,1\n4,5\n5,4\n8,9\n9,8",cents:"1,1\n5,5\n9,9",max:"5",title:"ตัวอย่าง 3 — K=3 (3 Clusters)",desc:"โจทย์ให้: 6 จุด | K=3 | C1=(1,1), C2=(5,5), C3=(9,9)\nจงแสดง Cluster ทั้ง 3 กลุ่ม"}
+];
+
+var q3AllRounds=[];
+function q3ShowEx(i){
+  document.querySelectorAll('#pg-q3 .exbtn').forEach(function(b,j){b.className='exbtn'+(j===i?' on':'');});
+  var ex=Q3_EX[i];
+  var html='<div class="prob"><div class="prob-title">📝 โจทย์</div><div class="prob-body">'+ex.desc+'</div>';
+  html+='<button class="load-btn" onclick="q3LoadEx('+i+')">📋 ใช้โจทย์นี้คำนวณ</button></div>';
+  document.getElementById('q3-ex').innerHTML=html;
+}
+function q3LoadEx(i){
+  var ex=Q3_EX[i];
+  document.getElementById('q3pts').value=ex.pts;document.getElementById('q3cents').value=ex.cents;document.getElementById('q3max').value=ex.max;
+  document.getElementById('q3res').innerHTML='<div class="warn">✅ กรอกค่าแล้ว กด ⚡ คำนวณ</div>';
+}
+function q3Calc(){
+  var P=document.getElementById('q3pts').value.trim().split('\n').map(function(l){return l.split(',').map(Number);});
+  var C=document.getElementById('q3cents').value.trim().split('\n').map(function(l){return l.split(',').map(Number);});
+  var K=C.length,maxIt=+document.getElementById('q3max').value;
+  q3AllRounds=[];
+  for(var it=0;it<maxIt;it++){
+    var asgn=P.map(function(p){var ds=C.map(function(c){return euc(p,c);});var mi=ds.indexOf(Math.min.apply(null,ds));return{p:p,ds:ds.map(f2),cluster:mi};});
+    var nC=Array.from({length:K},function(_,k){var cp=asgn.filter(function(a){return a.cluster===k;}).map(function(a){return a.p;});if(!cp.length)return C[k];return C[0].map(function(_,d){return cp.reduce(function(s,p){return s+p[d];},0)/cp.length;});});
+    var conv=nC.every(function(c,k){return c.every(function(v,d){return Math.abs(v-C[k][d])<0.0001;});});
+    q3AllRounds.push({it:it+1,C:C.map(function(c){return c.slice();}),asgn:asgn,nC:nC.map(function(c){return c.slice();}),conv:conv});
+    C=nC;if(conv)break;
+  }
+  var nav=document.getElementById('q3nav');nav.style.display='flex';nav.innerHTML='';
+  q3AllRounds.forEach(function(r,i){var b=document.createElement('div');b.className='epbtn'+(i===0?' on':'');b.textContent='รอบ '+r.it+(r.conv?' ✅':'');b.setAttribute('data-i',i);b.onclick=function(){var idx=+this.getAttribute('data-i');document.querySelectorAll('#q3nav .epbtn').forEach(function(x,j){x.className='epbtn'+(j===idx?' on':'');});q3ShowRound(idx);};nav.appendChild(b);});
+  q3ShowRound(0);
+}
+function q3ShowRound(idx){
+  var r=q3AllRounds[idx];var K=r.C.length;
+  var h='<div class="card am"><div class="ep-header">รอบที่ '+r.it+' Centroid: '+r.C.map(function(c,k){return'C'+(k+1)+'=('+c.map(f2).join(',')+')'}).join(' | ')+'</div>';
+  h+='<div class="hdg">Step 1: Assign ทุก point ไป Centroid ที่ใกล้สุด</div>';
+  h+='<div style="overflow-x:auto"><table><thead><tr><th>Point</th><th>(x,y)</th>';
+  r.C.forEach(function(_,k){h+='<th>d(C'+(k+1)+')</th>';});
+  h+='<th>Assign</th></tr></thead><tbody>';
+  r.asgn.forEach(function(a,i){h+='<tr><td>P'+(i+1)+'</td><td>('+a.p.join(',')+')</td>'+a.ds.map(function(d,k){return'<td class="'+(a.cluster===k?'tg':'')+'">'+d+'</td>';}).join('')+'<td class="tg">C'+(a.cluster+1)+'</td></tr>';});
+  h+='</tbody></table></div>';
+  h+='<div class="hdg">Step 2: คำนวณ Centroid ใหม่</div>';
+  for(var k=0;k<K;k++){
+    var cp=r.asgn.filter(function(a){return a.cluster===k;}).map(function(a){return a.p;});
+    h+='<div class="fml g">C'+(k+1)+' = {'+cp.map(function(p){return'('+p.join(',')+')'}).join(',')+'}\nx̄ = '+cp.map(function(p){return p[0];}).join('+')+' / '+cp.length+' = '+f2(r.nC[k][0])+'\nȳ = '+cp.map(function(p){return p[1];}).join('+')+' / '+cp.length+' = '+f2(r.nC[k][1])+'\n→ <b>C'+(k+1)+'_new = ('+r.nC[k].map(f2).join(', ')+')</b></div>';
+  }
+  if(r.conv)h+='<div class="ans"><div class="ant">✅ CONVERGED! Centroid ไม่เปลี่ยนแล้ว — หยุดได้</div></div>';
+  h+='</div>';
+  document.getElementById('q3res').innerHTML=h;
+}
+
+/* ══════════════════════════════════════════════════════════
+   Q4 — BACKPROPAGATION
+══════════════════════════════════════════════════════════ */
+var Q4_EX=[
+  {mode:"single",xs:"1,2",ws:"0.1,0.5",b:"-0.2",y:"0",al:"0.5",ep:"1",
+   title:"ตัวอย่าง 1 — จากโน้ต (Homework) X1=1,X2=2,y=0",
+   desc:"โจทย์: X1=1, X2=2 | W1=0.1, W2=0.5, b=−0.2 | y=0 | η=0.5 | Sigmoid\nจงหา Output (ŷ) และอัปเดต W2"},
+  {mode:"single",xs:"0.5,0.7",ws:"0.2,-0.3",b:"0.1",y:"1.0",al:"0.1",ep:"3",
+   title:"ตัวอย่าง 2 — 3 Epochs (จากโน้ตเก่า) y=1",
+   desc:"โจทย์: X1=0.5, X2=0.7 | W1=0.2, W2=−0.3, b=0.1 | y=1.0 | η=0.1\nจงทำ 3 Epochs"},
+  {mode:"single",xs:"1,2,-1",ws:"0.1,0.5,0.2",b:"-0.2",y:"0",al:"0.5",ep:"1",
+   title:"ตัวอย่าง 3 — พลิกแปลง: 3 Inputs (X1,X2,X3)",
+   desc:"โจทย์: X1=1, X2=2, X3=−1 | W1=0.1, W2=0.5, W3=0.2, b=−0.2 | y=0 | η=0.5\nเพิ่ม X3 มาอีก 1 ตัว วิธีทำเหมือนกันทุกอย่าง"}
+];
+var q4Mode='single',q4AllRounds=[];
+function q4SetMode(m){
+  q4Mode=m;
+  document.getElementById('q4m1').className='mbtn'+(m==='single'?' on':'');
+  document.getElementById('q4m2').className='mbtn'+(m==='two'?' on':'');
+  document.getElementById('q4-single').style.display=m==='single'?'':'none';
+  document.getElementById('q4-two').style.display=m==='two'?'':'none';
+}
+function q4ShowEx(i){
+  document.querySelectorAll('#pg-q4 .exbtn').forEach(function(b,j){b.className='exbtn'+(j===i?' on':'');});
+  var ex=Q4_EX[i];
+  var html='<div class="prob"><div class="prob-title">📝 โจทย์</div><div class="prob-body">'+ex.desc+'</div>';
+  html+='<button class="load-btn" onclick="q4LoadEx('+i+')">📋 ใช้โจทย์นี้คำนวณ</button></div>';
+  html+=q4SolveStatic(ex);
+  document.getElementById('q4-ex').innerHTML=html;
+}
+function q4LoadEx(i){
+  var ex=Q4_EX[i];
+  q4SetMode(ex.mode);
+  document.getElementById('q4xs').value=ex.xs;document.getElementById('q4ws').value=ex.ws;
+  document.getElementById('q4b').value=ex.b;document.getElementById('q4y').value=ex.y;
+  document.getElementById('q4al').value=ex.al;document.getElementById('q4ep').value=ex.ep;
+  document.getElementById('q4res').innerHTML='<div class="warn">✅ กรอกค่าแล้ว กด ⚡ คำนวณ</div>';
+}
+function q4SolveStatic(ex){
+  var X=ex.xs.split(',').map(Number);
+  var W=ex.ws.split(',').map(Number);
+  var b=+ex.b,y=+ex.y,al=+ex.al,ep=+ex.ep;
+  var out='<div class="sol"><div class="sol-title">✅ วิธีทำ (Chain Rule Notation — แบบที่อาจารย์ใช้)</div>';
+  var Wcur=W.slice(),bcur=b;
+  for(var e=0;e<ep;e++){
+    var z=Wcur.reduce(function(s,w,i){return s+w*X[i];},bcur);
+    var a=sig(z);
+    var dL_da=-(y-a);// (a-y)
+    var da_dz=a*(1-a);
+    out+='<div class="ep-header">Epoch '+(e+1)+'</div>';
+    out+='<div class="step"><div class="sn">1</div><div class="st"><b style="color:#fff">Forward Pass: คำนวณ z และ a</b>\nz = W₁x₁+W₂x₂+...+b\n  = '+Wcur.map(function(w,i){return'('+f2(w)+')('+X[i]+')'}).join(' + ')+' + ('+f2(bcur)+')\n  = '+Wcur.map(function(w,i){return f2(w*X[i])}).join(' + ')+' + ('+f2(bcur)+')\n  = <b style="color:#60a5fa;font-size:14px">'+f2(z)+'</b>\na = σ(z) = 1/(1+e⁻ᶻ) = 1/(1+e^'+f2(z)+') = <b style="color:#60a5fa;font-size:14px">'+f2(a)+'</b></div></div>';
+    out+='<div class="step"><div class="sn r">2</div><div class="st"><b style="color:#fff">Loss: L = ½(y−a)²</b>\nL = ½('+y+'−'+f2(a)+')² = ½('+f2(y-a)+')² = <b style="color:#f87171">'+f2(0.5*(y-a)*(y-a))+'</b></div></div>';
+    out+='<div class="chain-box"><div class="chain-title">⭐ Chain Rule (วิธีนี้เขียนในข้อสอบ)</div>';
+    out+='<div style="font-family:monospace;font-size:13px;color:#e2e8f0;line-height:2">';
+    out+='<b style="color:#fbbf24">Step 3:</b> ∂L/∂a = −(y−a) = −('+y+'−'+f2(a)+') = <b style="color:#fbbf24">'+f2(dL_da)+'</b>\n';
+    out+='<b style="color:#fbbf24">Step 4:</b> ∂a/∂z = a(1−a) = '+f2(a)+'×'+f2(1-a)+' = <b style="color:#fbbf24">'+f2(da_dz)+'</b>\n';
+    Wcur.forEach(function(w,i){
+      var grad=dL_da*da_dz*X[i];
+      out+='<b style="color:#4ade80">Step 5:</b> ∂z/∂w'+(i+1)+' = x'+(i+1)+' = '+X[i]+'\n';
+      out+='&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>∂L/∂w'+(i+1)+'</b> = ∂L/∂a × ∂a/∂z × ∂z/∂w'+(i+1)+'\n';
+      out+='&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = '+f2(dL_da)+' × '+f2(da_dz)+' × '+X[i]+' = <b style="color:#4ade80">'+f2(grad)+'</b>\n';
+    });
+    var grad_b=dL_da*da_dz;
+    out+='<b style="color:#4ade80">Step 5b:</b> ∂z/∂b = 1 → ∂L/∂b = '+f2(dL_da)+' × '+f2(da_dz)+' × 1 = <b style="color:#4ade80">'+f2(grad_b)+'</b>\n';
+    out+='</div></div>';
+    var nW=Wcur.map(function(w,i){return w-al*dL_da*da_dz*X[i];});
+    var nb=bcur-al*grad_b;
+    out+='<div class="ans"><div class="ant">✅ Step 6: Update (เขียนในข้อสอบ)</div>';
+    out+='<div style="font-family:monospace;font-size:13px;color:#bbf7d0">';
+    Wcur.forEach(function(w,i){var grad=dL_da*da_dz*X[i];out+='W'+(i+1)+'_new = '+f2(w)+' − ('+al+')('+f2(grad)+') = <b style="color:#4ade80;font-size:14px">'+f2(nW[i])+'</b>\n';});
+    out+='b_new &nbsp;= '+f2(bcur)+' − ('+al+')('+f2(grad_b)+') = <b style="color:#4ade80;font-size:14px">'+f2(nb)+'</b></div></div>';
+    out+='<div class="delta-box"><div class="delta-title">δ Notation (เทียบให้ดู — ผลเหมือนกัน)</div>';
+    out+='<div style="font-family:monospace;font-size:12px;color:#c4b5fd;line-height:1.8">';
+    out+='δ = ∂L/∂a × ∂a/∂z = '+f2(dL_da)+' × '+f2(da_dz)+' = <b>'+f2(dL_da*da_dz)+'</b>\n';
+    Wcur.forEach(function(w,i){out+='W'+(i+1)+'_new = '+f2(w)+' − ('+al+')('+f2(dL_da*da_dz)+')('+X[i]+') = <b>'+f2(nW[i])+'</b>\n';});
+    out+='b_new = '+f2(bcur)+' − ('+al+')('+f2(grad_b)+') = <b>'+f2(nb)+'</b></div></div>';
+    Wcur=nW;bcur=nb;
+  }
+  out+='</div>';
+  return out;
+}
+function q4Calc(){
+  if(q4Mode==='single'){
+    var ex={mode:"single",xs:document.getElementById('q4xs').value,ws:document.getElementById('q4ws').value,b:document.getElementById('q4b').value,y:document.getElementById('q4y').value,al:document.getElementById('q4al').value,ep:document.getElementById('q4ep').value};
+    var ep=+ex.ep;
+    if(ep<=1){document.getElementById('q4res').innerHTML=q4SolveStatic(ex);document.getElementById('q4nav').style.display='none';return;}
+    // multi epoch
+    var X=ex.xs.split(',').map(Number),W=ex.ws.split(',').map(Number),b=+ex.b,y=+ex.y,al=+ex.al;
+    q4AllRounds=[];
+    for(var e=0;e<ep;e++){
+      var z=W.reduce(function(s,w,i){return s+w*X[i];},b);
+      var a=sig(z),dL_da=-(y-a),da_dz=a*(1-a),grad_b=dL_da*da_dz;
+      var nW=W.map(function(w,i){return w-al*dL_da*da_dz*X[i];});
+      q4AllRounds.push({e:e+1,X:X.slice(),W:W.slice(),b:b,y:y,al:al,z:z,a:a,dL_da:dL_da,da_dz:da_dz,grad_b:grad_b,nW:nW.slice(),nb:b-al*grad_b});
+      W=nW;b=b-al*grad_b;
+    }
+    var nav=document.getElementById('q4nav');nav.style.display='flex';nav.innerHTML='';
+    q4AllRounds.forEach(function(r,i){var btn=document.createElement('div');btn.className='epbtn'+(i===0?' on':'');btn.textContent='Epoch '+r.e;btn.setAttribute('data-i',i);btn.onclick=function(){var idx=+this.getAttribute('data-i');document.querySelectorAll('#q4nav .epbtn').forEach(function(x,j){x.className='epbtn'+(j===idx?' on':'');});q4ShowRoundCalc(idx);};nav.appendChild(btn);});
+    q4ShowRoundCalc(0);
+  } else {
+    var X=document.getElementById('q4txs').value.split(',').map(Number);
+    var WH=document.getElementById('q4twhs').value.split(',').map(Number);
+    var bh=+document.getElementById('q4tbh').value,Wo=+document.getElementById('q4two').value,bo=+document.getElementById('q4tbo').value;
+    var y=+document.getElementById('q4ty').value,al=+document.getElementById('q4tal').value,ep=+document.getElementById('q4tep').value;
+    document.getElementById('q4nav').style.display='none';
+    var out='<div class="sol"><div class="sol-title">✅ 2-Layer Network — Chain Rule</div>';
+    for(var e=0;e<ep;e++){
+      var zh=WH.reduce(function(s,w,i){return s+w*X[i];},bh);
+      var h_=sig(zh),zo=Wo*h_+bo,yhat=sig(zo);
+      var L=0.5*(y-yhat)*(y-yhat);
+      var dL_dyhat=-(y-yhat),dyhat_dzo=yhat*(1-yhat);
+      var dh_dzh=h_*(1-h_);
+      var dL_dWo=dL_dyhat*dyhat_dzo*h_,dL_dbo=dL_dyhat*dyhat_dzo;
+      var delta_h=dL_dyhat*dyhat_dzo*Wo*dh_dzh;
+      var nWo=Wo-al*dL_dWo,nbo=bo-al*dL_dbo;
+      var nWH=WH.map(function(w,i){return w-al*delta_h*X[i];});
+      var nbh=bh-al*delta_h;
+      out+='<div class="ep-header">Epoch '+(e+1)+'</div>';
+      out+='<div class="step"><div class="sn">1</div><div class="st"><b style="color:#fff">Forward: Hidden</b>\nz_h = '+WH.map(function(w,i){return'('+f2(w)+')('+X[i]+')'}).join('+')+'+('+f2(bh)+') = <b style="color:#60a5fa">'+f2(zh)+'</b>\nh = σ('+f2(zh)+') = <b style="color:#60a5fa">'+f2(h_)+'</b></div></div>';
+      out+='<div class="step"><div class="sn">2</div><div class="st"><b style="color:#fff">Forward: Output</b>\nz_o = ('+f2(Wo)+')('+f2(h_)+')+('+f2(bo)+') = <b style="color:#60a5fa">'+f2(zo)+'</b>\nŷ = σ('+f2(zo)+') = <b style="color:#60a5fa">'+f2(yhat)+'</b>  |  L=<b style="color:#f87171">'+f2(L)+'</b></div></div>';
+      out+='<div class="chain-box"><div class="chain-title">⭐ Chain Rule — Output Layer</div>';
+      out+='<div style="font-family:monospace;font-size:13px;color:#e2e8f0;line-height:1.9">';
+      out+='∂L/∂ŷ = −(y−ŷ) = '+f2(dL_dyhat)+'\n∂ŷ/∂z_o = ŷ(1−ŷ) = '+f2(yhat)+'×'+f2(1-yhat)+' = '+f2(dyhat_dzo)+'\n∂L/∂Wo = ∂L/∂ŷ×∂ŷ/∂z_o×h = '+f2(dL_dyhat)+'×'+f2(dyhat_dzo)+'×'+f2(h_)+' = <b style="color:#fbbf24">'+f2(dL_dWo)+'</b>\n</div></div>';
+      out+='<div class="chain-box"><div class="chain-title">⭐ Chain Rule — Hidden Layer (Chain ย้อนกลับ)</div>';
+      out+='<div style="font-family:monospace;font-size:13px;color:#e2e8f0;line-height:1.9">';
+      out+='∂h/∂z_h = h(1−h) = '+f2(h_)+'×'+f2(1-h_)+' = '+f2(dh_dzh)+'\nδ_h = ∂L/∂ŷ×∂ŷ/∂z_o×Wo×∂h/∂z_h\n    = '+f2(dL_dyhat)+'×'+f2(dyhat_dzo)+'×'+f2(Wo)+'×'+f2(dh_dzh)+' = <b style="color:#4ade80">'+f2(delta_h)+'</b>\n';
+      WH.forEach(function(w,i){out+='∂L/∂Wh'+(i+1)+' = δ_h × x'+(i+1)+' = '+f2(delta_h)+'×'+X[i]+' = <b style="color:#4ade80">'+f2(delta_h*X[i])+'</b>\n';});
+      out+='</div></div>';
+      out+='<div class="ans"><div class="ant">✅ Update</div><div style="font-family:monospace;font-size:13px;color:#bbf7d0">';
+      out+='Wo_new = '+f2(Wo)+' − ('+al+')('+f2(dL_dWo)+') = <b>'+f2(nWo)+'</b>\nb_o_new = '+f2(bo)+' − ('+al+')('+f2(dL_dbo)+') = <b>'+f2(nbo)+'</b>\n';
+      WH.forEach(function(w,i){out+='Wh'+(i+1)+'_new = '+f2(w)+' − ('+al+')('+f2(delta_h)+'×'+X[i]+') = <b>'+f2(nWH[i])+'</b>\n';});
+      out+='b_h_new = '+f2(bh)+' − ('+al+')('+f2(delta_h)+') = <b>'+f2(nbh)+'</b></div></div>';
+      WH=nWH;bh=nbh;Wo=nWo;bo=nbo;
+    }
+    out+='</div>';
+    document.getElementById('q4res').innerHTML=out;
+  }
+}
+function q4ShowRoundCalc(idx){
+  var r=q4AllRounds[idx];
+  var ex={mode:"single",xs:r.X.join(','),ws:r.W.join(','),b:String(r.b),y:String(r.y),al:String(r.al),ep:"1"};
+  document.getElementById('q4res').innerHTML=q4SolveStatic(ex);
+}
+
+/* ══════════════════════════════════════════════════════════
+   Q5 — Q-LEARNING
+══════════════════════════════════════════════════════════ */
+var Q5_EX=[
+  {ns:"6",gm:"0.8",rm:"-1,-1,-1,-1,0,-1\n-1,-1,-1,0,-1,100\n-1,-1,-1,0,-1,-1\n-1,0,0,-1,0,-1\n0,-1,-1,0,-1,100\n-1,0,-1,-1,0,100",eps:"1,5\n3,1,5\n0,4,5",
+   title:"ตัวอย่าง 1 — จาก QL.pdf (6 rooms, γ=0.8)",
+   desc:"โจทย์: 5 ห้อง + ภายนอก (room 5=Goal) | γ=0.8 | Q-table เริ่มต้น=0\nEpisode 1: Room 1→5 | Ep.2: Room 3→1→5 | Ep.3: Room 0→4→5\nจงหา Q(1,5), Q(3,1), Q(0,4)"},
+  {ns:"6",gm:"0.8",rm:"-1,-1,-1,-1,0,-1\n-1,-1,-1,0,-1,100\n-1,-1,-1,0,-1,-1\n-1,0,0,-1,0,-1\n0,-1,-1,0,-1,100\n-1,0,-1,-1,0,100",eps:"2,3,1,5",
+   title:"ตัวอย่าง 2 — พลิกแปลง: เส้นทาง 2→3→1→5",
+   desc:"โจทย์: ตาราง R เดิม γ=0.8\nEpisode: 2→3→1→5\nจงหา Q(2,3), Q(3,1), Q(1,5) ตามลำดับ"},
+  {ns:"6",gm:"0.9",rm:"-1,-1,-1,-1,0,-1\n-1,-1,-1,0,-1,100\n-1,-1,-1,0,-1,-1\n-1,0,0,-1,0,-1\n0,-1,-1,0,-1,100\n-1,0,-1,-1,0,100",eps:"1,5\n3,1,5",
+   title:"ตัวอย่าง 3 — พลิกแปลง: γ=0.9 (ต่างจาก 0.8)",
+   desc:"โจทย์: ตาราง R เดิม แต่ γ=0.9\nEpisode 1: 1→5 | Ep.2: 3→1→5\nQ(3,1) = 0 + 0.9 × 100 = 90 (ต่างจาก γ=0.8 ที่ได้ 80)"}
+];
+
+function q5ShowEx(i){
+  document.querySelectorAll('#pg-q5 .exbtn').forEach(function(b,j){b.className='exbtn'+(j===i?' on':'');});
+  var ex=Q5_EX[i];
+  var html='<div class="prob"><div class="prob-title">📝 โจทย์</div><div class="prob-body">'+ex.desc+'</div>';
+  html+='<button class="load-btn" onclick="q5LoadEx('+i+')">📋 ใช้โจทย์นี้คำนวณ</button></div>';
+  html+=q5Solve(ex);
+  document.getElementById('q5-ex').innerHTML=html;
+}
+function q5LoadEx(i){
+  var ex=Q5_EX[i];
+  document.getElementById('q5ns').value=ex.ns;document.getElementById('q5gm').value=ex.gm;
+  document.getElementById('q5rm').value=ex.rm;document.getElementById('q5eps').value=ex.eps;
+  document.getElementById('q5res').innerHTML='<div class="warn">✅ กรอกค่าแล้ว กด ⚡ คำนวณ</div>';
+}
+function q5Solve(ex){
+  var N=+ex.ns;
+  var R=ex.rm.trim().split('\n').map(function(l){return l.split(',').map(Number);});
+  var g=+ex.gm;
+  var Q=Array.from({length:N},function(){return Array(N).fill(0);});
+  var paths=ex.eps.trim().split('\n').map(function(l){return l.split(',').map(Number);});
+  var out='<div class="sol"><div class="sol-title">✅ วิธีทำ — Q(s,a)=R(s,a)+'+g+'×max[Q(s\',all)]</div>';
+  var epIdx=0;
+  paths.forEach(function(path){
+    epIdx++;
+    out+='<div class="ep-header">Episode '+epIdx+': '+path.join(' → ')+'</div>';
+    for(var i=0;i<path.length-1;i++){
+      var s=path[i],a=path[i+1];
+      if(s>=N||a>=N||R[s][a]===-1){out+='<div class="warn">⚠ State '+s+'→'+a+': R=−1 ทางนี้ปิด ข้ามไม่ได้!</div>';continue;}
+      var maxQ=Math.max.apply(null,Q[a]);
+      var newQ=R[s][a]+g*maxQ,oldQ=Q[s][a];
+      Q[s][a]=newQ;
+      out+='<div class="step"><div class="sn g">→</div><div class="st"><b style="color:#fff">Q('+s+','+a+') คำนวณ:</b>\n';
+      out+='Q('+s+','+a+') = R('+s+','+a+') + '+g+' × max[Q('+a+', all)]\n';
+      out+='Q['+a+'] ปัจจุบัน = ['+Q[a].map(function(v){return v.toFixed(1);}).join(', ')+']\n';
+      out+='= '+R[s][a]+' + '+g+' × max['+Q[a].map(function(v){return v.toFixed(1);}).join(', ')+']\n';
+      out+='= '+R[s][a]+' + '+g+' × '+f2(maxQ)+'\n';
+      out+='= <b style="color:#4ade80;font-size:14px">'+f2(newQ)+'</b>';
+      if(oldQ!==newQ)out+='  ← อัปเดตจาก '+f2(oldQ);
+      out+='</div></div>';
+    }
+    out+='<div class="hdg">Q-Table หลัง Episode '+epIdx+'</div>';
+    out+='<div style="overflow-x:auto"><table><thead><tr><th>S\\A</th>';
+    Q[0].forEach(function(_,j){out+='<th>'+j+'</th>';});
+    out+='</tr></thead><tbody>';
+    Q.forEach(function(row,i){out+='<tr><td style="font-weight:700;color:#fff;background:#0a1120">S'+i+'</td>';row.forEach(function(v){out+='<td class="'+(v>0?'tg':'')+'">'+( v>0?v.toFixed(1):'0')+'</td>';});out+='</tr>';});
+    out+='</tbody></table></div>';
+    out+='<div class="exam"><div class="ext">📝 เขียนในข้อสอบ (Episode '+epIdx+')</div>';
+    out+='<div style="font-family:monospace;font-size:12px;color:#c7d2fe;line-height:1.9">';
+    paths[epIdx-1].forEach(function(s,i){
+      if(i>=paths[epIdx-1].length-1)return;
+      var a=paths[epIdx-1][i+1];
+      if(s<N&&a<N&&R[s]&&R[s][a]!==-1){out+='Q('+s+','+a+') = '+R[s][a]+' + '+g+'×... = <b>'+f2(Q[s][a])+'</b><br>';}
+    });
+    out+='</div></div>';
+  });
+  out+='</div>';
+  return out;
+}
+function q5Calc(){
+  var ex={ns:document.getElementById('q5ns').value,gm:document.getElementById('q5gm').value,rm:document.getElementById('q5rm').value,eps:document.getElementById('q5eps').value};
+  document.getElementById('q5res').innerHTML=q5Solve(ex);
+}
+
+/* INIT */
+q1ShowEx(0);q2aShowEx(0);q2bShowEx(0);q3ShowEx(0);q4ShowEx(0);q5ShowEx(0);
+</script>
+</body>
+</html>
